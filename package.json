@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "boardgame.io": "^0.17.2",
+    "js-combinatorics": "^0.5.3",
+    "knuth-shuffle": "^1.0.8",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-scripts": "1.1.1"
@@ -13,5 +15,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "pug": "^2.0.0-rc.4"
   }
 }

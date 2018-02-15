@@ -1,7 +1,7 @@
 import { Client } from "boardgame.io/client";
 import { Game } from "boardgame.io/core";
 
-const TicTacToe = Game({
+const SetGame = Game({
   setup: () => ({ cells: Array(9).fill(null) }),
 
   moves: {
@@ -13,6 +13,6 @@ const TicTacToe = Game({
   }
 });
 
-const App = Client({ game: TicTacToe });
+const App = Client({ game: SetGame });
 
 export default App;
