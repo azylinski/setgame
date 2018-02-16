@@ -1,44 +1,7 @@
 import Combinatorics from "js-combinatorics";
 import { knuthShuffle as shuffle } from "knuth-shuffle";
-
-export const FEATURES = {
-  Types: ["Number", "Symbol", "Shading", "Color"],
-  Names: {
-    Numbers: ["one", "two", "three"],
-    Symbols: ["diamond", "squiggle", "oval"],
-    Shadings: ["solid", "striped", "open"],
-    Colors: ["red", "green", "purple"]
-  },
-  Chars: {
-    Numbers: ["1", "2", "3"],
-    Symbols: ["d", "s", "o"],
-    Shadings: ["S", "T", "O"],
-    Colors: ["r", "g", "p"]
-  }
-};
-
-export const charToName = c => {
-  let name = null;
-
-  FEATURES.Types.forEach(t => {
-    for (let i = 0; i < 3; i++) {
-      if (FEATURES.Chars[t+"s"][i] === c) {
-        name = FEATURES.Names[t+"s"][i];
-      }
-    }
-  });
-
-  return name;
-};
-
-export const codeToObj = code => {
-  let obj = {};
-  for (let i = 0; i < code.length; i++) {
-    obj[FEATURES.Types[i]] = charToName(code[i]);
-  }
-
-  return obj;
-};
+import { Game } from "boardgame.io/core";
+import { FEATURES } from "./const"
 
 export const buildDeck = (mode = "Chars") => {
   let it = Combinatorics.cartesianProduct(
@@ -50,3 +13,43 @@ export const buildDeck = (mode = "Chars") => {
 
   return shuffle(it.map(props => props.join("")));
 };
+
+const isSet = (picked) => {
+  for (let i=0; i<4; i++) {
+    const s = new Set([ picked[0][i], picked[1][i], picked[2][i] ]);
+    if (s.size === 2) return false;
+  }
+
+  return true;
+}
+
+export const SetGame = Game({
+  setup: (numPlayers) => ({
+    deck: buildDeck(),
+    board: [...Array(12).keys()],
+    next: 12,
+    scores: Array(numPlayers).fill(0)
+  }),
+
+  moves: {
+    check(G, ctx, picked) {
+      if (!isSet(picked)) return G;
+
+      let scores = [...G.scores];
+      scores[ctx.currentPlayer]++;
+
+      let next = G.next;
+      let board = [...G.board];
+      for (let i=0; i<picked.length; i++) {
+        const cardId = picked[i];
+        const deckIdx = G.deck.indexOf(cardId);
+        const pos = board.indexOf(deckIdx);
+
+        board[pos] = next;
+        next++;
+      }
+
+      return { ...G, board, next, scores };
+    }
+  }
+});
